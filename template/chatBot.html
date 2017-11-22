@@ -1,14 +1,30 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <title>Hello, world!</title>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
-  </head>
-  <body>
-    <h2>{{.InitMsg}}</h2>
-  </body>
+<!DOCTYPE html>
+  <html>
+    <body>
+      <h1>The ChatterBot</h1>
+        <form>
+          <label><b>Hi I'm ChatterBot, how are you today?</b></label>
+          <input type="text" name="userInput" id="userInput">
+          <button type="button" onclick="loadDoc()">Chat</button>
+        </form>
+        <div id="demo">
+        </div>
+
+<script>
+function loadDoc() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("demo").innerHTML =
+      this.responseText;
+    }
+  };
+  xhttp.open("POST", "userInput");
+  xhttp.setRequestHeader("Cache-Control", "no-cache");
+  xhttp.setRequestHeader("value", document.getElementById("userInput").value);
+  xhttp.send();
+}
+</script>
+
+</body>
 </html>
