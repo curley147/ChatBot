@@ -21,21 +21,25 @@ func ChatResponse(input string) string {
 		"Why do you say that?",
 	}
 	//regexp strings to look for certain patterns
-	reObjs := [7]string{
+	reObjs := [9]string{
 		//check for how are you? from the user
-		"(?i).*how are you\\?*.*",
+		"(?i).*where.*\\?+[.?!]?",
 		//check for "I am", "I'm", "Iam", "i'm", "i am", "iam" in input string and capturing data
 		"(?i)(.*I[' a]*m)([^.?!]*)[.?!]?",
 		//check for "i think" and capturing data
 		"(?i)(.*I think)([^.?!]*)[.?!]?",
 		//check for you and ?
-		"(?i)(you+)(.*)(\\?+)",
+		"(?i)(you+)(.*)(\\?+)[.?!]?",
 		//check for "i like" and capturing data
 		"(?i)(.*I like)(\\s+)[.?!]?",
 		//check for numbers
-		"\\d",
+		"\\d[.?!]?",
 		//check for how are you? from the user
-		"(?i).*hello\b.*",
+		"(?i).*hello.*[.?!]?",
+		//check for "i need" and capturing data
+		"(?i)(^\\s*I need)([^.!?]*)[.!?]*\\s*$",
+		//check for "my name is" and capturing data
+		"(?i)(.*my name is)(.*)",
 	}
 	//for loop iterating over regexp strings and compiling them
 	for i := 0; i < len(reObjs); i++ {
@@ -47,7 +51,7 @@ func ChatResponse(input string) string {
 			switch i {
 			case 0:
 				//greeting response
-				return "I'm very well thank you for asking, how are you?"
+				return "Somewhere over the rainbow!"
 			case 1:
 				//replacing start of response and adding captured data
 				return re.ReplaceAllString(input, "How do you know you are $2?")
@@ -65,6 +69,13 @@ func ChatResponse(input string) string {
 			case 6:
 				//hello response
 				return "Hello there again!"
+			case 7:
+				//replacing "i need" and adding captured data
+				return re.ReplaceAllString(input, "Why do you need $2?")
+			case 8:
+				//replacing "my name is" and adding captured data
+				return re.ReplaceAllString(input, "Hi $1, how are you?")
+
 			default:
 				return "Error message"
 			}
@@ -79,13 +90,20 @@ func ChatResponse(input string) string {
 //Pronouns reflection method
 func Reflect(input string) string {
 	// Split the input on word boundaries.
-	boundaries := regexp.MustCompile(`\b`)
+	boundaries := regexp.MustCompile("\b")
 	tokens := boundaries.Split(input, -1)
 	// List the reflections.
 	reflections := [][]string{
 		{"your", "my"},
+		{"my", "your"},
 		{"you", "I"},
 		{"me", "you"},
+		{"am", "are"},
+		{"are", "am"},
+		{"yours", "mine"},
+		{"mine", "yours"},
+		{"myself", "yourself"},
+		{"yourself", "myself"},
 	}
 	// Loop through each token, reflecting it if there's a match.
 	for i, token := range tokens {
@@ -100,18 +118,25 @@ func Reflect(input string) string {
 	return strings.Join(tokens, ``)
 }
 func chatBotHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(r.Header.Get("value"))
+	//storing saved value from incoming request
 	input := r.Header.Get("value")
+	//printing it
 	fmt.Fprintf(w, "You: %s\n", input)
 	response := Reflect(input)
 	refResponse := ChatResponse(response)
 	fmt.Fprintf(w, "ChatterBot: %s\n", refResponse)
 }
 
+//redirect method
+func redirect(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "127.0.0.1/chatBot.html", 301)
+}
+
 //main
 func main() {
 	//static file handler
-	http.Handle("/", http.FileServer(http.Dir("./html")))
+	http.Handle("/", redirect)
+	// http.Handle("/", http.FileServer(http.Dir("./html")))
 	//template file handler
 	http.HandleFunc("/postSend", chatBotHandler)
 	//Listen for requests on port 80

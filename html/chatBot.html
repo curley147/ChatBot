@@ -33,9 +33,12 @@
 <script>
 
 function loadDoc() {
+  //create request instance
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
+    //if page loads successfully
     if (xhttp.readyState == 4 && xhttp.status == 200) {
+      //add on response data
       document.getElementById("output").innerHTML += xhttp.responseText;
       //test
       // console.log( xhttp.responseText);
@@ -43,12 +46,15 @@ function loadDoc() {
       // console.log( xhttp.status);
     }
   };
+  //set request headers with user input value
   xhttp.open("POST", "/postSend");
   xhttp.setRequestHeader("Cache-Control", "no-cache");
   xhttp.setRequestHeader("value", document.getElementById("userInput").value);
   xhttp.send();
+  //clear text input field for next user input
   $('#chatform')[0].reset();
 }
+//accommodates enter key usage in submitting
 document.getElementById('userInput').onkeydown = function(e){
    if(e.keyCode == 13){
     e.preventDefault();
