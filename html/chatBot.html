@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" type="text/css" href="chatBot.css">
+        <div class="topnav">
+            <h3>CHATTERBOT</h3>
+          </div> 
+      </head>
+  <body>
+    <div class="container">
+      <form id="chatform" align="center"> 
+        <h4>Hi, I'm ChatterBot. How are you today?</h4>
+        <input type="text" id="userInput" size="55" placeholder="Say something to ChatterBot">
+        <button id="chat" type="button" class="btn btn-primary" onclick="loadDoc()">Chat</button>
+      </div>
+      <div>
+          <textarea id="output" class="tarea" rows="40" cols="80"></textarea>
+        </div>
+      </form>
+  <!-- jQuery first, then Tether, then Bootstrap JS. -->
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+<script>
+
+function loadDoc() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (xhttp.readyState == 4 && xhttp.status == 200) {
+      document.getElementById("output").innerHTML += xhttp.responseText;
+      //test
+      // console.log( xhttp.responseText);
+      // console.log( xhttp.readyState);
+      // console.log( xhttp.status);
+    }
+  };
+  xhttp.open("POST", "/postSend");
+  xhttp.setRequestHeader("Cache-Control", "no-cache");
+  xhttp.setRequestHeader("value", document.getElementById("userInput").value);
+  xhttp.send();
+  $('#chatform')[0].reset();
+}
+document.getElementById('userInput').onkeydown = function(e){
+   if(e.keyCode == 13){
+    e.preventDefault();
+    document.getElementById("chat").click();
+   }
+};
+
+// $("#chatform").submit(
+//         function(event) {
+//           event.preventDefault();
+//           $.get('/chatBot', {value: $('#userInput').val()})
+//             .done(function (data) {
+//               $('#output').val(data);
+//             })
+//         });
+</script>
+
+</body>
+</html>
