@@ -21,9 +21,9 @@ func ChatResponse(input string) string {
 		"Why do you say that?",
 	}
 	//regexp strings to look for certain patterns
-	reObjs := [9]string{
-		//check for how are you? from the user
-		"(?i).*where.*\\?+[.?!]?",
+	reObjs := [11]string{
+		//check for "my name is" and capturing data
+		"(?i)(.*my name is)(.*)",
 		//check for "I am", "I'm", "Iam", "i'm", "i am", "iam" in input string and capturing data
 		"(?i)(.*I[' a]*m)([^.?!]*)[.?!]?",
 		//check for "i think" and capturing data
@@ -38,8 +38,12 @@ func ChatResponse(input string) string {
 		"(?i).*hello.*[.?!]?",
 		//check for "i need" and capturing data
 		"(?i)(^\\s*I need)([^.!?]*)[.!?]*\\s*$",
-		//check for "my name is" and capturing data
-		"(?i)(.*my name is)(.*)",
+		//check for how are you? from the user
+		"(?i).*where.*\\?+[.?!]?",
+		//check for "why dont you" and capturing data
+		"(?i)(^\\s*why can'?t i)([^.!?]*)[.!?]*\\s*$",
+		//check for "why cant i" and capturing data
+		"(?i)(^\\s*why don'?t you)([^.!?]*)[.!?]*\\s*$",
 	}
 	//for loop iterating over regexp strings and compiling them
 	for i := 0; i < len(reObjs); i++ {
@@ -50,8 +54,8 @@ func ChatResponse(input string) string {
 		if match == true {
 			switch i {
 			case 0:
-				//greeting response
-				return "Somewhere over the rainbow!"
+				//replacing "my name is" and adding captured data
+				return re.ReplaceAllString(input, "Hi $1, how are you?")
 			case 1:
 				//replacing start of response and adding captured data
 				return re.ReplaceAllString(input, "How do you know you are $2?")
@@ -73,9 +77,14 @@ func ChatResponse(input string) string {
 				//replacing "i need" and adding captured data
 				return re.ReplaceAllString(input, "Why do you need $2?")
 			case 8:
-				//replacing "my name is" and adding captured data
-				return re.ReplaceAllString(input, "Hi $1, how are you?")
-
+				//greeting response
+				return "Somewhere over the rainbow!"
+			case 9:
+				//why dont you response
+				return re.ReplaceAllString(input,  "Perhaps eventually I will $2")
+			case 10:
+				//why dont you response
+				return re.ReplaceAllString(input,  "If you could $2, what would you do?")
 			default:
 				return "Error message"
 			}
@@ -104,6 +113,9 @@ func Reflect(input string) string {
 		{"mine", "yours"},
 		{"myself", "yourself"},
 		{"yourself", "myself"},
+		{"i'd", "you would"},
+		{"i've", "you have"},
+		{"i'll", "you will"},
 	}
 	// Loop through each token, reflecting it if there's a match.
 	for i, token := range tokens {
@@ -135,8 +147,7 @@ func redirect(w http.ResponseWriter, r *http.Request) {
 //main
 func main() {
 	//static file handler
-	http.Handle("/", redirect)
-	// http.Handle("/", http.FileServer(http.Dir("./html")))
+	http.Handle("/", http.FileServer(http.Dir("./html")))
 	//template file handler
 	http.HandleFunc("/postSend", chatBotHandler)
 	//Listen for requests on port 80
